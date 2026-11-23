@@ -31,6 +31,10 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      # For the coverage comment on pull requests.
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +47,33 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
       - name: Run tests with coverage (fails below the threshold in pyproject.toml)
-        run: uv run pytest
+        # The JUnit and Cobertura XML files feed the pull request comment below.
+        run: uv run pytest --junitxml=pytest.xml --cov-report=xml:coverage.xml
+      - name: Write coverage to the job summary
+        if: ${{ !cancelled() }}
+        run: |
+          {
+            echo "### Coverage (${{ matrix.os }})"
+            echo
+            uv run coverage report --format=markdown --skip-covered --skip-empty
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Comment test results and coverage on the pull request
+        # One comment per pull request, updated on each push; Linux only, to avoid two
+        # identical comments. Skipped for forks, whose token cannot write comments.
+        if: >-
+          ${{ !cancelled()
+              && github.event_name == 'pull_request'
+              && matrix.os == 'ubuntu-latest'
+              && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: MishaKav/pytest-coverage-comment@v1.13.1
+        with:
+          pytest-xml-coverage-path: coverage.xml
+          junitxml-path: pytest.xml
+          junitxml-title: Tests
+          # The threshold is 100%, so the table lists only files that fall short.
+          xml-skip-covered: true
+          show-failed-tests: true
+          annotate-missing-lines: true
 
   build:
     name: Build sdist and wheel

@@ -122,6 +122,11 @@ The hooks run ruff (lint with the `S` security and `PT` pytest rules, and format
 the rule and the reason. CI runs the same hooks, the tests on Linux and macOS, a wheel build
 installed into a clean environment, and a container build that must answer `GET /health`.
 
+On a pull request the Linux test job posts one comment, updated on every push, with the test
+counts, the names and output of failed tests, and any file below 100% coverage; uncovered added
+lines are annotated in the diff. Each test job also writes a coverage table to its run summary.
+Pull requests from forks get only the summary, since their token cannot write comments.
+
 ## Container
 
 Build and run the image locally:

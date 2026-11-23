@@ -29,6 +29,11 @@ jobs:
     name: CI
     needs: verify-version
     uses: ./.github/workflows/ci.yml
+    # A called workflow may not ask for more than its caller grants, and ci.yml's test job
+    # asks for pull-requests: write (its comment step runs only on pull requests).
+    permissions:
+      contents: read
+      pull-requests: write
 
   release:
     name: Publish GitHub release

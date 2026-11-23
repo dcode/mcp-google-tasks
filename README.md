@@ -174,7 +174,7 @@ GitHub Actions runs on every pull request and on every push to `main`:
 | Job | What it does |
 |---|---|
 | Lint, format and type-check | All pre-commit hooks: ruff, rumdl, taplo and ty |
-| Test | The test suite with the coverage threshold, on Linux and macOS |
+| Test | The test suite with the coverage threshold, on Linux and macOS; on pull requests, one comment with test results and coverage |
 | Build | Builds the sdist and wheel, installs the wheel into a clean environment, and uploads both as an artifact |
 | Container | Builds the Docker image (not pushed), runs it in `token` mode and waits for `GET /health` to return 200 |
 

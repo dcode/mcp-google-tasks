@@ -15,8 +15,8 @@ Last updated: 2026-11-22.
   coverage; every pre-commit hook passes; `uv build` produces the sdist and wheel; the server
   starts in `token` mode over HTTP with a dummy token and answers `GET /health`.
 - **Not checked yet:** the Docker image has never been built (Docker was not available), the
-  three GitHub workflows have never run, and the catalog entry has not been imported into
-  Obot.
+  three GitHub workflows (including the pull request coverage comment) have never run, and
+  the catalog entry has not been imported into Obot.
 - **Next action:** commit, push and let CI build the image; then work through "Confirm against
   the real thing", starting with `token` mode.
 
@@ -30,6 +30,8 @@ Last updated: 2026-11-22.
       mode hides write tools; RFC 3339 validation; resources fetch all pages; `/health`;
       cyclopts CLI and structlog; `python -m` entry point fixed; non-root multi-stage image;
       Obot single-user catalog entry; user and developer docs
+- [x] Pull requests get one comment with test results, failed tests and coverage below 100%
+      (MishaKav/pytest-coverage-comment), plus a coverage table in each test job's summary
 - [x] Example Kubernetes manifests in [contrib/kubernetes/](../contrib/kubernetes/): a
       `resource-server` Kustomize base and an `oauth-proxy` overlay with a PVC; both render
       with `kubectl kustomize`
