@@ -30,6 +30,9 @@ Last updated: 2026-11-22.
       mode hides write tools; RFC 3339 validation; resources fetch all pages; `/health`;
       cyclopts CLI and structlog; `python -m` entry point fixed; non-root multi-stage image;
       Obot single-user catalog entry; user and developer docs
+- [x] PyPI publishing: the release workflow uploads to PyPI through trusted publishing before
+      the GitHub release; the package description links resolve to GitHub; a test keeps the
+      image tags in the catalog entry and Kubernetes example equal to `__version__`
 - [x] Pull requests get one comment with test results, failed tests and coverage below 100%
       (MishaKav/pytest-coverage-comment), plus a coverage table in each test job's summary
 - [x] Example Kubernetes manifests in [contrib/kubernetes/](../contrib/kubernetes/): a
@@ -103,6 +106,13 @@ in angle brackets come from an untracked `.env` (see [.env.example](../.env.exam
   kubectl -n google-tasks logs deployment/google-tasks
   ```
 
+- [ ] **First PyPI release.** The `v0.2.0` tag publishes `mcp-google-tasks` 0.2.0 (this also
+      claims the reserved name), the description renders with working links, and it runs:
+
+  ```bash
+  uvx mcp-google-tasks@0.2.0 --version
+  ```
+
 - [ ] **Multi-arch image pull** after the first release, on an amd64 and an arm64 host:
 
   ```bash
@@ -134,8 +144,7 @@ Rough order. Each item is one pull request or one focused commit.
 1. Run the `token`-mode checks above and fix what they find.
 2. Run the Obot checks (single-user, then Remote + Static OAuth) and record the Obot version
    used.
-3. Tag v0.2.0; confirm the image publishes for both architectures and pin it in the catalog
-   entry.
+3. Tag v0.2.0; confirm the PyPI upload and that the image publishes for both architectures.
 
 ## Later
 

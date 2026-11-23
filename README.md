@@ -1,5 +1,20 @@
 # mcp-google-tasks
 
+[![CI][ci-badge]][ci] [![Coverage][coverage-badge]][coverage] [![Container][container-badge]][container]
+[![PyPI][pypi-badge]][pypi] [![Python][python-badge]][pypi] [![License][license-badge]][license]
+
+[ci-badge]: https://github.com/dcode/mcp-google-tasks/actions/workflows/ci.yml/badge.svg?branch=main
+[ci]: https://github.com/dcode/mcp-google-tasks/actions/workflows/ci.yml?query=branch%3Amain
+[coverage-badge]: https://img.shields.io/badge/coverage-100%25-brightgreen
+[coverage]: docs/development.md#tests
+[container-badge]: https://github.com/dcode/mcp-google-tasks/actions/workflows/container.yml/badge.svg?branch=main
+[container]: https://github.com/dcode/mcp-google-tasks/pkgs/container/mcp-google-tasks
+[pypi-badge]: https://img.shields.io/pypi/v/mcp-google-tasks
+[pypi]: https://pypi.org/project/mcp-google-tasks/
+[python-badge]: https://img.shields.io/pypi/pyversions/mcp-google-tasks
+[license-badge]: https://img.shields.io/github/license/dcode/mcp-google-tasks
+[license]: LICENSE
+
 Google Tasks MCP server for Obot: multi-user OAuth or single-user tokens.
 
 An [MCP](https://modelcontextprotocol.io) server that exposes the whole Google Tasks REST API v1
@@ -49,7 +64,7 @@ claude mcp add google-tasks \
   -e GOOGLE_OAUTH_CLIENT_ID=<client-id> \
   -e GOOGLE_OAUTH_CLIENT_SECRET=<client-secret> \
   -e GOOGLE_OAUTH_REFRESH_TOKEN=<refresh-token> \
-  -- uvx --from git+https://github.com/dcode/mcp-google-tasks mcp-google-tasks --transport stdio
+  -- uvx mcp-google-tasks --transport stdio
 ```
 
 Or any client that reads the common `mcpServers` JSON shape, running from a clone with
@@ -187,7 +202,9 @@ base images.
 
 ### Releasing
 
-1. Bump the version: `hatch version minor` (or `patch`, `major`), then commit.
+1. Bump the version: `hatch version minor` (or `patch`, `major`), set the same version as the
+   image tag in `catalog/google-tasks.yaml` and `contrib/kubernetes/base/kustomization.yaml`
+   (a test fails until they match), then commit.
 
 2. Tag that commit with the same version, prefixed with `v`, and push the tag:
 
@@ -195,9 +212,10 @@ base images.
    git tag v0.2.0 && git push origin v0.2.0
    ```
 
-The release workflow checks that the tag matches `__version__`, runs the full CI suite, and
-publishes a GitHub release with the sdist and wheel attached and generated release notes. It
-does not publish to PyPI. The container image is published to `ghcr.io/dcode/mcp-google-tasks`;
+The release workflow checks that the tag matches `__version__`, runs the full CI suite,
+publishes the sdist and wheel to [PyPI](https://pypi.org/project/mcp-google-tasks/) through
+trusted publishing, and then publishes a GitHub release with them attached and generated release
+notes. The container image is published to `ghcr.io/dcode/mcp-google-tasks`;
 see [docs/development.md](docs/development.md#releasing).
 
 ### With hatch
