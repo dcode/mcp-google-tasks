@@ -153,7 +153,9 @@ docker buildx build --platform linux/amd64,linux/arm64 -t mcp-google-tasks:dev .
 
 1. Update [ROADMAP.md](ROADMAP.md), bump the version with `hatch version minor` (or `patch`,
    `major`), set the same version as the image tag in
-   [catalog/google-tasks.yaml](../catalog/google-tasks.yaml), and commit.
+   [catalog/google-tasks.yaml](../catalog/google-tasks.yaml) and
+   [contrib/kubernetes/base/kustomization.yaml](../contrib/kubernetes/base/kustomization.yaml),
+   and commit. `tests/test_package.py` fails until all three match.
 
 2. Tag that commit `v<version>` and push the tag:
 
@@ -161,7 +163,14 @@ docker buildx build --platform linux/amd64,linux/arm64 -t mcp-google-tasks:dev .
    git tag v0.2.0 && git push origin v0.2.0
    ```
 
-The release workflow checks that the tag matches `__version__`, runs CI, and publishes a GitHub
-release with the sdist and wheel. The container image is published to
-`ghcr.io/dcode/mcp-google-tasks` with the version as its tag, which the catalog entry now pins.
-Nothing is published to PyPI.
+The release workflow checks that the tag matches `__version__`, runs CI, publishes the sdist and
+wheel that CI built to PyPI, and then publishes a GitHub release with them. PyPI comes first
+because an upload cannot be redone under the same version, while a failed GitHub release can be
+re-run. The container image is published to
+`ghcr.io/dcode/mcp-google-tasks` with the version as its tag, which the catalog entry pins.
+
+PyPI publishing uses [trusted publishing](https://docs.pypi.org/trusted-publishers/): no API
+token is stored. The PyPI project `mcp-google-tasks` trusts the workflow `release.yml` in this
+repository running in the GitHub environment `pypi`; renaming either breaks publishing until the
+publisher on PyPI is updated. The package description on PyPI is README.md with its relative
+links rewritten to GitHub URLs by `hatch-fancy-pypi-readme` (configured in `pyproject.toml`).

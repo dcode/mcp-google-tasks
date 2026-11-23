@@ -183,6 +183,18 @@ entries.
 upkeep only if people ask for one. Streamable HTTP sessions are held in the pod's memory, so a
 second replica breaks sessions unless the ingress pins them by `Mcp-Session-Id`.
 
+### Published to PyPI through trusted publishing
+
+**Decision:** each `v*` tag publishes the sdist and wheel to PyPI as `mcp-google-tasks`, from the
+release workflow, through PyPI trusted publishing (OIDC, the `pypi` environment), before the
+GitHub release. The version lives only in `__init__.py`; the image tags that repeat it are
+checked against it by a test.
+
+**Why:** `uvx mcp-google-tasks` is the simplest way to run the server locally, and a PyPI
+release gives the package a version badge and an index others can depend on. Trusted publishing
+stores no token. Publishing to PyPI first means a failure leaves nothing half-released that
+cannot be retried.
+
 ### Tooling and code style
 
 - Python 3.14+, uv for environments, hatchling build with the version read from
@@ -197,8 +209,9 @@ second replica breaks sessions unless the ingress pins them by `Mcp-Session-Id`.
   `hatch fmt`, `hatch run types`, `hatch run hooks`, `hatch run check`, `hatch build`.
 - American English everywhere. Conventional-commit messages.
 - GitHub Actions: pre-commit job, test job on Linux and macOS, build job that installs the
-  wheel into a clean environment. A `v*` tag publishes a GitHub release (not to PyPI) after
-  checking that the tag matches `__version__`. Dependabot runs weekly for Actions and Python.
+  wheel into a clean environment. A `v*` tag publishes to PyPI (trusted publishing) and then a
+  GitHub release, after checking that the tag matches `__version__`. Dependabot runs weekly
+  for Actions and Python.
 - Development specifications for larger changes go in [docs/specs/](specs/), numbered.
 
 ## Testing Decisions
@@ -216,8 +229,6 @@ second replica breaks sessions unless the ingress pins them by `Mcp-Session-Id`.
 
 ## Out of Scope
 
-- **Publishing to PyPI.** Releases are GitHub releases and a container image. If the package is
-  ever published, add a trusted-publishing job to the release workflow.
 - **A multi-user Obot Containerized entry.** Obot v0.25.2 does not broker OAuth for Containerized
   servers (obot-platform/obot#5372). Revisit when that issue is resolved.
 - **An interactive sign-in command for token mode.** The OAuth Playground with the operator's own
