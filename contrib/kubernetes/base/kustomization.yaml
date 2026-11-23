@@ -24,7 +24,7 @@ resources:
 images:
   # Pin a released version, or a digest with `digest: sha256:...`.
   - name: ghcr.io/dcode/mcp-google-tasks
-    newTag: 0.1.0
+    newTag: 0.2.0
 
 # Non-secret settings, injected with envFrom. Reference: docs/configuration.md.
 configMapGenerator:

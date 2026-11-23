@@ -23,7 +23,7 @@ repoURL: https://github.com/dcode/mcp-google-tasks
 serverUserType: singleUser
 runtime: containerized
 containerizedConfig:
-  image: ghcr.io/dcode/mcp-google-tasks:0.1.0
+  image: ghcr.io/dcode/mcp-google-tasks:0.2.0
   port: 8000
   path: /mcp
   healthz: /health

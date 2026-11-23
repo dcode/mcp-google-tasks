@@ -7,7 +7,7 @@ Last updated: 2026-11-22.
 
 ## Where things stand
 
-- **Version:** 0.1.0, not yet committed or tagged; no image has been published.
+- **Version:** 0.2.0, not yet tagged; no image has been published. 0.1.0 was never released.
 - **State:** restructured per [spec 0001](specs/0001-restructure-for-obot.md): package layout,
   three auth modes, container image, Obot catalog entry, CI (including a container smoke test)
   and image publishing workflows, docs. Nothing has run against real Google or a real Obot yet.
@@ -106,8 +106,8 @@ in angle brackets come from an untracked `.env` (see [.env.example](../.env.exam
 - [ ] **Multi-arch image pull** after the first release, on an amd64 and an arm64 host:
 
   ```bash
-  docker buildx imagetools inspect ghcr.io/dcode/mcp-google-tasks:0.1.0
-  docker run --rm ghcr.io/dcode/mcp-google-tasks:0.1.0 --version
+  docker buildx imagetools inspect ghcr.io/dcode/mcp-google-tasks:0.2.0
+  docker run --rm ghcr.io/dcode/mcp-google-tasks:0.2.0 --version
   ```
 
 - [ ] **Obot single-user catalog import.** Add this repository as a catalog source (or create the
@@ -134,7 +134,7 @@ Rough order. Each item is one pull request or one focused commit.
 1. Run the `token`-mode checks above and fix what they find.
 2. Run the Obot checks (single-user, then Remote + Static OAuth) and record the Obot version
    used.
-3. Tag v0.1.0; confirm the image publishes for both architectures and pin it in the catalog
+3. Tag v0.2.0; confirm the image publishes for both architectures and pin it in the catalog
    entry.
 
 ## Later
