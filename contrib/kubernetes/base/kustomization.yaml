@@ -1,0 +1,39 @@
+# Multi-user deployment in resource-server mode, the Remote target for Obot with Static OAuth
+# (docs/deployment-obot.md). Stateless: no volume, no secrets.
+#
+#   kubectl apply -k contrib/kubernetes/base
+#
+# Edit the values marked "example" before applying.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: google-tasks
+
+labels:
+  - pairs:
+      app.kubernetes.io/name: mcp-google-tasks
+      app.kubernetes.io/instance: google-tasks
+    includeSelectors: true
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+
+images:
+  # Pin a released version, or a digest with `digest: sha256:...`.
+  - name: ghcr.io/dcode/mcp-google-tasks
+    newTag: 0.1.0
+
+# Non-secret settings, injected with envFrom. Reference: docs/configuration.md.
+configMapGenerator:
+  - name: google-tasks-config
+    literals:
+      - MCP_AUTH_MODE=resource-server
+      # example: the public HTTPS URL served by ingress.yaml, without /mcp or trailing slash.
+      - MCP_BASE_URL=https://tasks.example.com
+      # example: the Google OAuth client Obot uses; its ID is the accepted token audience.
+      - GOOGLE_OAUTH_CLIENT_ID=<client-id>.apps.googleusercontent.com
+      - GOOGLE_TASKS_READONLY=false
+      - MCP_LOG_LEVEL=info

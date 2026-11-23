@@ -1,0 +1,5 @@
+# Obot scans every *.yaml/*.yml/*.json outside hidden directories as a catalog entry; the
+# only one is catalog/google-tasks.yaml. Hidden directories (.github) are skipped already.
+.pre-commit-config.yaml
+docs
+contrib
