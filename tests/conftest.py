@@ -153,7 +153,9 @@ class FakeGoogle:
     )
     requests: list[RecordedRequest] = field(default_factory=list)
     _failures: list[_Failure] = field(default_factory=list)
-    _ids: itertools.count[int] = field(default_factory=lambda: itertools.count(1))
+    # Quoted: itertools.count is subscriptable at runtime only from Python 3.14, and dataclass
+    # annotations are evaluated eagerly before that.
+    _ids: "itertools.count[int]" = field(default_factory=lambda: itertools.count(1))
     _refreshes: int = 0
 
     def __post_init__(self) -> None:

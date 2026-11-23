@@ -195,10 +195,20 @@ release gives the package a version badge and an index others can depend on. Tru
 stores no token. Publishing to PyPI first means a failure leaves nothing half-released that
 cannot be retried.
 
+### Supports Python 3.12 and later
+
+**Decision:** `requires-python = ">=3.12"`; the container image and development use 3.15. ruff
+and ty target 3.12, and CI tests every version from 3.12 to 3.15.
+
+**Why:** 3.12 is the oldest version that runs the code as written: it uses `type` aliases and
+PEP 695 generics (3.12 syntax). The floor was set by testing each version, not by rewriting code
+for older releases; the only change was quoting one test annotation that needs 3.14's lazy
+annotations. Targeting the floor in ruff and ty keeps newer-only syntax and APIs out.
+
 ### Tooling and code style
 
-- Python 3.14+, uv for environments, hatchling build with the version read from
-  `__version__`.
+- Python 3.12+ (see the decision above), uv for environments, hatchling build with the version
+  read from `__version__`.
 - Async for all I/O, Google-style docstrings, strict annotations throughout (`X | None`, never
   `Optional`; built-in generics such as `list[]`).
 - ruff (lint and format, line length 100, including the `S` security and `PT` pytest

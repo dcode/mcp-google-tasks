@@ -12,7 +12,10 @@ uv sync
 uv run pre-commit install
 ```
 
-Python 3.14 (pinned in `.python-version`); uv installs it if needed. Add dependencies with
+The package supports Python 3.12 and later. Development uses 3.15, pinned in
+`.python-version`; uv installs it if needed. ruff and ty target 3.12, so they reject anything
+newer than the oldest supported version, and CI runs the tests on 3.12, 3.13, 3.14 and 3.15
+(`hatch test` runs the same matrix). Add dependencies with
 `uv add` or `uv add --dev`, never by editing `uv.lock`.
 
 Run the server from the working tree:
@@ -119,11 +122,15 @@ uv run pytest
 
 The hooks run ruff (lint with the `S` security and `PT` pytest rules, and format), rumdl
 (Markdown, line length 100), taplo (TOML) and ty (strict, warnings are errors). Suppressions name
-the rule and the reason. CI runs the same hooks, the tests on Linux and macOS, a wheel build
+the rule and the reason. CI runs the same hooks, the tests on Linux (every supported Python)
+and macOS (the newest), a wheel build
 installed into a clean environment, and a container build that must answer `GET /health`.
 
-On a pull request the Linux test job posts one comment, updated on every push, with the test
-counts, the names and output of failed tests, and any file below 100% coverage; uncovered added
+The `Tests` job passes only when every test matrix job passed; branch rules require it rather
+than the individual matrix jobs, so the matrix can change without touching them.
+
+On a pull request the Linux Python 3.15 test job posts one comment, updated on every push, with
+the test counts, the names and output of failed tests, and any file below 100% coverage; uncovered added
 lines are annotated in the diff. Each test job also writes a coverage table to its run summary.
 Pull requests from forks get only the summary, since their token cannot write comments.
 
@@ -141,7 +148,7 @@ curl -fsS http://localhost:8000/health
 ```
 
 The builder stage installs the locked dependencies with uv (`uv sync --locked --no-dev
---no-editable`); the runtime stage is `python:3.14-slim` running as uid 10001 with
+--no-editable`); the runtime stage is `python:3.15-slim` running as uid 10001 with
 `MCP_TRANSPORT=http`, `MCP_HOST=0.0.0.0`, `MCP_PORT=8000` and a `/data` volume. To check that the
 image builds for both architectures the registry serves:
 

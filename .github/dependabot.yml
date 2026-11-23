@@ -15,7 +15,8 @@ updates:
     groups:
       python-dependencies:
         patterns: ["*"]
-  # Base images in the Dockerfile (python:3.14-slim and the pinned uv image).
+  # Base images in the Dockerfile (python:3.15-slim and the pinned uv image). A Python
+  # bump must also change UV_PYTHON in the Dockerfile, so it needs a manual follow-up.
   - package-ecosystem: docker
     directory: /
     schedule:

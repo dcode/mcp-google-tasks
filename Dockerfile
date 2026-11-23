@@ -12,7 +12,7 @@
 # Builder: resolve and install the locked dependency set into /app/.venv.
 # ---------------------------------------------------------------------------------------------
 # Both stages name the base image literally (not via ARG) so Dependabot can bump them.
-FROM python:3.14-slim AS builder
+FROM python:3.15-slim AS builder
 
 # Pinned to the uv release that wrote uv.lock, so `--locked` never trips over a lockfile
 # format change; bump it together with the lock.
@@ -26,7 +26,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /usr/local/bin/
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
-    UV_PYTHON=/usr/local/bin/python3.14 \
+    UV_PYTHON=/usr/local/bin/python3.15 \
     UV_PROJECT_ENVIRONMENT=/app/.venv
 
 WORKDIR /app
@@ -48,7 +48,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ---------------------------------------------------------------------------------------------
 # Runtime: same base image, venv only, non-root.
 # ---------------------------------------------------------------------------------------------
-FROM python:3.14-slim AS runtime
+FROM python:3.15-slim AS runtime
 
 LABEL org.opencontainers.image.title="mcp-google-tasks" \
       org.opencontainers.image.description="Google Tasks MCP server (multi-user OAuth or single-user token)" \
