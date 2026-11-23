@@ -6,7 +6,8 @@ description = "Google Tasks MCP server for Obot: multi-user OAuth or single-user
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "Derek Ditch", email = "dcode@users.noreply.github.com" }]
-requires-python = ">=3.14"
+# 3.12 is the floor: the code uses `type` aliases and PEP 695 generics. CI tests 3.12 to 3.15.
+requires-python = ">=3.12"
 keywords = ["mcp", "model-context-protocol", "google-tasks", "obot", "fastmcp"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -16,7 +17,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Office/Business :: Scheduling",
     "Typing :: Typed",
 ]
@@ -101,7 +105,7 @@ extra-dependencies = [
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.14"]
+python = ["3.12", "3.13", "3.14", "3.15"]
 
 [tool.hatch.envs.hatch-test.scripts]
 run = "pytest{env:HATCH_TEST_ARGS:} {args}"
@@ -132,7 +136,8 @@ exclude_also = ["if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py314"
+# The oldest supported version, so neither tool accepts anything newer.
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "D", "ANN", "ASYNC", "PT", "S", "RUF"]
@@ -147,7 +152,7 @@ convention = "google"
 "tests/*" = ["D", "ANN", "ASYNC240", "S101"]
 
 [tool.ty.environment]
-python-version = "3.14"
+python-version = "3.12"
 
 [tool.ty.src]
 include = ["src", "tests"]

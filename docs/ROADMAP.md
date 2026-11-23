@@ -7,18 +7,21 @@ Last updated: 2026-11-22.
 
 ## Where things stand
 
-- **Version:** 0.2.0, not yet tagged; no image has been published. 0.1.0 was never released.
+- **Version:** 0.2.0, not yet tagged: nothing on PyPI and no versioned image yet (`main`
+  publishes `edge`). 0.1.0 was never released.
 - **State:** restructured per [spec 0001](specs/0001-restructure-for-obot.md): package layout,
-  three auth modes, container image, Obot catalog entry, CI (including a container smoke test)
-  and image publishing workflows, docs. Nothing has run against real Google or a real Obot yet.
-- **Checked locally:** 434 tests pass against in-process fakes with 100% line and branch
-  coverage; every pre-commit hook passes; `uv build` produces the sdist and wheel; the server
-  starts in `token` mode over HTTP with a dummy token and answers `GET /health`.
-- **Not checked yet:** the Docker image has never been built (Docker was not available), the
-  three GitHub workflows (including the pull request coverage comment) have never run, and
-  the catalog entry has not been imported into Obot.
-- **Next action:** commit, push and let CI build the image; then work through "Confirm against
-  the real thing", starting with `token` mode.
+  three auth modes, container image, Obot catalog entry, CI, image and PyPI publishing, docs.
+  Supports Python 3.12 to 3.15. Nothing has run against real Google or a real Obot yet.
+- **Checked:** 436 tests pass against in-process fakes with 100% line and branch coverage on
+  Python 3.12, 3.13, 3.14 and 3.15; every pre-commit hook passes; `uv build` produces the sdist
+  and wheel, which installs and runs on 3.12. CI passed on the first pull request (including
+  the coverage comment), and the Container workflow published from `main`. Locally, the image
+  builds with Podman and answers `GET /health` as uid 10001 on Python 3.15.
+- **Not checked yet:** the release workflow (PyPI and GitHub release) has never run, the
+  Docker `HEALTHCHECK` status has not been observed (Podman ignores it), and the catalog entry
+  has not been imported into Obot.
+- **Next action:** tag v0.2.0; then work through "Confirm against the real thing", starting
+  with `token` mode.
 
 ## Done
 
@@ -30,6 +33,8 @@ Last updated: 2026-11-22.
       mode hides write tools; RFC 3339 validation; resources fetch all pages; `/health`;
       cyclopts CLI and structlog; `python -m` entry point fixed; non-root multi-stage image;
       Obot single-user catalog entry; user and developer docs
+- [x] Python: supports 3.12 to 3.15 (`requires-python = ">=3.12"`, tested in CI on each);
+      the image and development use 3.15
 - [x] PyPI publishing: the release workflow uploads to PyPI through trusted publishing before
       the GitHub release; the package description links resolve to GitHub; a test keeps the
       image tags in the catalog entry and Kubernetes example equal to `__version__`
