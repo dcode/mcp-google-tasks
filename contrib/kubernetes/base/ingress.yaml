@@ -1,0 +1,30 @@
+# TLS ends here; the server speaks plain HTTP. Obot rejects private and loopback addresses for
+# Remote entries by default, so the host must be publicly resolvable over HTTPS.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: google-tasks
+  annotations:
+    # example: let cert-manager issue the TLS certificate.
+    # cert-manager.io/cluster-issuer: letsencrypt
+    #
+    # Streamable HTTP holds responses open as server-sent event streams: raise the proxy
+    # read timeout and turn off response buffering with your controller's own annotations.
+spec:
+  # example: your ingress controller's class.
+  # ingressClassName: <class>
+  tls:
+    - hosts:
+        - tasks.example.com
+      secretName: google-tasks-tls
+  rules:
+    - host: tasks.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: google-tasks
+                port:
+                  name: http

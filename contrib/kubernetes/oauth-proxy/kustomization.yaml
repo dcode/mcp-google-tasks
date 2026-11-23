@@ -1,0 +1,39 @@
+# oauth-proxy mode: the server runs Google sign-in itself, for MCP clients that connect
+# directly. Keeps encrypted tokens in the filetree backend on a PersistentVolumeClaim.
+#
+#   cp contrib/kubernetes/oauth-proxy/secrets.env.example contrib/kubernetes/oauth-proxy/secrets.env
+#   # fill in secrets.env (git ignores it), then:
+#   kubectl apply -k contrib/kubernetes/oauth-proxy
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Repeated from ../base so the Secret and PVC added here get them too (and the Secret's
+# hashed name reaches the Deployment's secretRef).
+namespace: google-tasks
+
+labels:
+  - pairs:
+      app.kubernetes.io/name: mcp-google-tasks
+      app.kubernetes.io/instance: google-tasks
+
+resources:
+  - ../base
+  - pvc.yaml
+
+configMapGenerator:
+  - name: google-tasks-config
+    behavior: merge
+    literals:
+      - MCP_AUTH_MODE=oauth-proxy
+      - TOKEN_STORAGE_BACKEND=filetree
+      - TOKEN_STORAGE_DIR=/data/oauth-tokens
+      # example: only the MCP clients you expect may register.
+      - MCP_ALLOWED_CLIENT_REDIRECT_URIS=https://obot.example.com/*
+
+secretGenerator:
+  - name: google-tasks-secrets
+    envs:
+      - secrets.env
+
+patches:
+  - path: deployment-patch.yaml

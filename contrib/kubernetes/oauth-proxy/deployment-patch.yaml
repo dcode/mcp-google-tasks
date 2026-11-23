@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: google-tasks
+spec:
+  # A ReadWriteOnce volume attaches to one pod at a time: stop the old pod before starting
+  # the new one. For several replicas, use TOKEN_STORAGE_BACKEND=redis instead of a volume.
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+        - name: mcp-google-tasks
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: google-tasks-data

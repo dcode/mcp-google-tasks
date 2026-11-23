@@ -1,0 +1,13 @@
+# Allowlist: the build context holds only what the Dockerfile copies, so secrets (.env,
+# tokens), the local venv and caches can never leak into an image layer.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE
+!src/
+
+# Re-exclude build litter inside the allowed tree.
+**/__pycache__
+**/*.py[cod]
+**/.DS_Store

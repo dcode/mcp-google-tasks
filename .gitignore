@@ -221,3 +221,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# House scaffold additions
+.rumdl_cache/
+
+# Never commit local environment details or secrets.
+*.env
+!.env.example
+.secrets/
+*.pem
+config.toml
+
+# Tracked on purpose (pins the interpreter for uv); overrides global ignores.
+!.python-version

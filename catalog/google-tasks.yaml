@@ -1,0 +1,80 @@
+name: Google Tasks
+description: |
+  Single-user Google Tasks MCP server. Each Obot user gets their own instance,
+  configured once with a Google OAuth refresh token (plus the OAuth client it
+  was issued to) -- no interactive login or browser step in Obot.
+
+  15 tools covering task lists (list, get, create, update, patch, delete) and
+  tasks (list, get, create, update, patch, delete, move, clear completed), plus
+  `get_current_user`. Set read-only mode to hide every write tool.
+
+  For multi-user deployments where Obot runs the Google OAuth flow per user,
+  use a Remote catalog entry with Static OAuth instead; see the project README.
+
+  Not affiliated with, endorsed by, or supported by Google.
+shortDescription: >-
+  Single-user MCP server for Google Tasks: manage task lists and tasks with a
+  per-user OAuth refresh token, optionally read-only.
+icon: https://ssl.gstatic.com/images/branding/product/1x/tasks_2021_48dp.png
+entryKey: google-tasks
+metadata:
+  categories: Productivity
+repoURL: https://github.com/dcode/mcp-google-tasks
+serverUserType: singleUser
+runtime: containerized
+containerizedConfig:
+  image: ghcr.io/dcode/mcp-google-tasks:0.1.0
+  port: 8000
+  path: /mcp
+  healthz: /health
+env:
+  # Static value: the image serves HTTP, where the auth mode would otherwise default to
+  # oauth-proxy (which needs a public base URL and OAuth client settings). Obot does not
+  # prompt for fields that carry a value.
+  - key: MCP_AUTH_MODE
+    name: Auth Mode
+    required: true
+    sensitive: false
+    value: token
+    description: >-
+      Fixed to "token": single-user mode using the Google credentials below.
+  - key: GOOGLE_OAUTH_REFRESH_TOKEN
+    name: Google OAuth Refresh Token
+    required: true
+    sensitive: true
+    description: >-
+      Refresh token for your Google account with the Google Tasks scope
+      (https://www.googleapis.com/auth/tasks, or tasks.readonly for read-only
+      mode), issued to the OAuth client below. The server refreshes access
+      tokens with it automatically.
+  - key: GOOGLE_OAUTH_CLIENT_ID
+    name: Google OAuth Client ID
+    required: true
+    sensitive: false
+    description: >-
+      Client ID of the Google Cloud OAuth client the refresh token was issued
+      to, for example 1234567890-abc.apps.googleusercontent.com.
+  - key: GOOGLE_OAUTH_CLIENT_SECRET
+    name: Google OAuth Client Secret
+    required: true
+    sensitive: true
+    description: Client secret of the same Google Cloud OAuth client.
+  - key: GOOGLE_OAUTH_ACCESS_TOKEN
+    name: Google OAuth Access Token
+    required: false
+    sensitive: true
+    description: >-
+      Optional starting access token. Used until Google rejects it, then the
+      refresh token takes over. Leave blank to start from the refresh token.
+  - key: GOOGLE_TASKS_READONLY
+    name: Read-only Mode
+    required: false
+    sensitive: false
+    description: >-
+      When "true", requests only the tasks.readonly scope and does not offer
+      any tool that changes tasks. Defaults to "false".
+    options:
+      - name: Read and write
+        value: "false"
+      - name: Read-only
+        value: "true"

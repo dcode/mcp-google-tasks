@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: google-tasks
+spec:
+  # Streamable HTTP sessions live in the pod's memory, so more replicas need session affinity
+  # on the Mcp-Session-Id header at the ingress. One replica is the supported setup.
+  replicas: 1
+  template:
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        # The image's fixed non-root user (see Dockerfile).
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mcp-google-tasks
+          image: ghcr.io/dcode/mcp-google-tasks
+          args: ["--transport", "http"]
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: google-tasks-config
+            # Created only by overlays that need secrets (see ../oauth-proxy).
+            - secretRef:
+                name: google-tasks-secrets
+                optional: true
+          # GET /health answers 200 without authentication in every mode. It shows the
+          # process serves HTTP, not that Google is reachable.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
